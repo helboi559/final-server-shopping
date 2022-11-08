@@ -28,7 +28,7 @@ export const register = tryCatch (async (req, res) => {
         email: emailLowerCase,
         password: hashedPassword,
     });
-    const { _id: id, photoURL } = user;
+    const { _id: id, photoURL, role, active } = user;
     const token = jwt.sign({ id, name, photoURL }, process.env.JWT_SECRET, {
         expiresIn: '1h',
     });
@@ -55,16 +55,34 @@ export const login = tryCatch(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid credentials' });
   }
   //if match create token
-  const { _id: id, name , photoURL } = existedUser;
-  const token = jwt.sign({ id, name, photoURL }, process.env.JWT_SECRET, {
+  const { _id: id, name , photoURL, role, active} = existedUser;
+  // console.log("email", emailLowerCase)
+  // console.log("role", role)
+  // //if email doesnt contain a gmail change role to admin
+  // if(!emailLowerCase.includes('gmail')){
+  //   role = 'admin';
+  // }
+  //if user is not active
+  if (!active) {
+    return res.status(400).json({ success: false, message: 'User is not active' });
+  }
+  const token = jwt.sign({ id, name, photoURL,role }, process.env.JWT_SECRET, {
     expiresIn: '1h',
   });
   res.status(200).json({
     success: true,
-    result: { id, name, email: emailLowerCase, photoURL, token},
+    result: { id, name, email: emailLowerCase, photoURL, token, role, active}
   });
 });
 
+export const fetchUsers = tryCatch(async (req, res) => {
+  const users = await User.find({}).sort({ _id: -1 });
+  // console.log("users",users)
+  res.status(200).json({
+    success: true,
+    result: users
+  });
+});
 
 export const updateProfile = tryCatch(async (req, res) => {
     //mongoose update
@@ -72,7 +90,7 @@ export const updateProfile = tryCatch(async (req, res) => {
         new: true,
     });
     console.log("updatedUser",updatedUser)
-    const { _id: id, name, photoURL } = updatedUser;
+    const { _id: id, name, photoURL, role } = updatedUser;
     //create new token
     const token = jwt.sign({ id, name, photoURL }, process.env.JWT_SECRET, {
         expiresIn: '1h',
