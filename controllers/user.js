@@ -29,12 +29,12 @@ export const register = tryCatch (async (req, res) => {
         password: hashedPassword,
     });
     const { _id: id, photoURL, role, active } = user;
-    const token = jwt.sign({ id, name, photoURL }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id, name, photoURL, role}, process.env.JWT_SECRET, {
         expiresIn: '1h',
     });
     res.status(201).json({
         success: true,
-        result: { id, name, email: user.email, photoURL, token},
+        result: { id, name, email: user.email, photoURL, token, role, active},
     });
   
 });
@@ -56,17 +56,10 @@ export const login = tryCatch(async (req, res) => {
   }
   //if match create token
   const { _id: id, name , photoURL, role, active} = existedUser;
-  // console.log("email", emailLowerCase)
-  // console.log("role", role)
-  // //if email doesnt contain a gmail change role to admin
-  // if(!emailLowerCase.includes('gmail')){
-  //   role = 'admin';
-  // }
-  //if user is not active
   if (!active) {
-    return res.status(400).json({ success: false, message: 'User is not active' });
+    return res.status(400).json({ success: false, message: 'User is not active, Talk to your administrator' });
   }
-  const token = jwt.sign({ id, name, photoURL,role }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id, name, photoURL, role}, process.env.JWT_SECRET, {
     expiresIn: '1h',
   });
   res.status(200).json({
@@ -82,6 +75,13 @@ export const fetchUsers = tryCatch(async (req, res) => {
     success: true,
     result: users
   });
+});
+
+export const updateStatus = tryCatch(async (req, res) => {
+  const {role, active} = req.body;
+  const updatedUser = await User.findByIdAndUpdate(
+    req.params.userId,{role, active});
+  res.status(200).json({ success: true, result: {_id: req.params.userId} });
 });
 
 export const updateProfile = tryCatch(async (req, res) => {

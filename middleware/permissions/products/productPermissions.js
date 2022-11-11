@@ -6,6 +6,10 @@ const productPermissions = {
     //delete products
     delete: {
         roles: ['admin']
+    },
+    //create products
+    create : {
+        roles: ['admin']
     }
 }
 

@@ -3,11 +3,12 @@
 const checkAccess = (permission) => {
     return async (req, res, next) => {
         //checks roles in permission
+        // console.log("req.user", req.user)
         if(permission.roles.includes(req.user?.role)) {
             return next();
         }
-        //checks if the owner is the userobject exists
-        if(!permission.owner) {
+        //checks if theere is no permission and no owner
+        if(!permission?.owner) {
             return res.status(401).json({success: false, message: "You are not authorized to perform this action"})
 
         }

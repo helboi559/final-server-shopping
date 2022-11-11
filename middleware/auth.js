@@ -24,7 +24,7 @@ const auth = async (req, res, next) => {
         id: payload.sub,
         name: payload.name,
         photoURL: payload.picture,
-        role: 'admin',
+        role: 'basic',
       };
     } else {
         //check if its jwt token and decode
