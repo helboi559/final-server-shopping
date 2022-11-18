@@ -21,7 +21,7 @@ export const updateProduct = tryCatch(async (req, res) => {
 export const deleteProduct = tryCatch(async (req, res) => {
   const {_id} = await Product.findByIdAndDelete(req.params.productId);
   console.log("id",_id)
-  res.status(200).json({ success: true, result: _id });
+  res.status(200).json({ success: true, result: {_id} });
 })
 
 export const createProduct = tryCatch(async (req, res) => {
