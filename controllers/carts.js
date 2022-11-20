@@ -1,5 +1,5 @@
 import tryCatch from "./util/tryCatch.js";
-import Cart from "../models/cart.js";
+import Cart from "../models/Cart.js";
 // import Stripe from "stripe";
 // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
